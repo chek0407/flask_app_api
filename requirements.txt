@@ -1,0 +1,7 @@
+flask
+flask_jwt_extended
+boto3
+botocore
+werkzeug
+flask_restx
+gunicorn

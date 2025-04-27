@@ -1,0 +1,633 @@
+{
+  "swagger": "2.0",
+  "basePath": "/",
+  "paths": {
+    "/Session/login": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "Login a user",
+        "operationId": "post_user_login",
+        "parameters": [
+          {
+            "name": "payload",
+            "required": true,
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/UserLogin"
+            }
+          }
+        ],
+        "tags": [
+          "Session"
+        ]
+      }
+    },
+    "/Users/add_user": {
+      "post": {
+        "responses": {
+          "400": {
+            "description": "Missing required fields"
+          },
+          "201": {
+            "description": "User created successfully"
+          }
+        },
+        "summary": "Create a new user",
+        "operationId": "add_user",
+        "parameters": [
+          {
+            "name": "payload",
+            "required": true,
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/Users/users_list": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "List all users",
+        "operationId": "users_list",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/epl/players": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "Add a new player",
+        "operationId": "add_player",
+        "parameters": [
+          {
+            "name": "payload",
+            "required": true,
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Player"
+            }
+          }
+        ],
+        "tags": [
+          "epl"
+        ]
+      }
+    },
+    "/epl/players/{team_id}/{jersey_number}": {
+      "parameters": [
+        {
+          "name": "team_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "jersey_number",
+          "in": "path",
+          "required": true,
+          "type": "integer"
+        }
+      ],
+      "delete": {
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "Delete a specific player by Team ID and Jersey Number",
+        "operationId": "delete_player",
+        "tags": [
+          "epl"
+        ]
+      },
+      "put": {
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "Update a player's info by Team ID and Jersey Number",
+        "operationId": "update_player",
+        "parameters": [
+          {
+            "name": "payload",
+            "required": true,
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Player"
+            }
+          }
+        ],
+        "tags": [
+          "epl"
+        ]
+      }
+    },
+    "/epl/search": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "Search teams or players by any attribute",
+        "operationId": "search_epl",
+        "parameters": [
+          {
+            "in": "query",
+            "description": "Value to match (contains)",
+            "name": "value",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "description": "Attribute name to search",
+            "name": "key",
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "epl"
+        ]
+      }
+    },
+    "/epl/teams": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "List all real teams (not players)",
+        "operationId": "list_teams",
+        "tags": [
+          "epl"
+        ]
+      }
+    },
+    "/epl/teams/{team_id}": {
+      "parameters": [
+        {
+          "name": "team_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "Get all players from a specific team",
+        "operationId": "get_team_players",
+        "tags": [
+          "epl"
+        ]
+      },
+      "delete": {
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "Delete a team and all its players",
+        "operationId": "delete_team",
+        "tags": [
+          "epl"
+        ]
+      },
+      "put": {
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "Update team attributes",
+        "operationId": "update_team",
+        "parameters": [
+          {
+            "name": "payload",
+            "required": true,
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Team"
+            }
+          }
+        ],
+        "tags": [
+          "epl"
+        ]
+      }
+    },
+    "/epl/teams/{team_id}/details": {
+      "parameters": [
+        {
+          "name": "team_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "Get full team info with filters and sorting",
+        "operationId": "get_team_with_players",
+        "parameters": [
+          {
+            "description": "Filter by player position",
+            "name": "position",
+            "type": "string",
+            "in": "query"
+          },
+          {
+            "description": "Minimum player age",
+            "name": "min_age",
+            "type": "string",
+            "in": "query"
+          },
+          {
+            "description": "Maximum player age",
+            "name": "max_age",
+            "type": "string",
+            "in": "query"
+          },
+          {
+            "description": "Filter by jersey number",
+            "name": "number",
+            "type": "string",
+            "in": "query"
+          },
+          {
+            "description": "Field to sort by (age, number, PlayerName, Position)",
+            "name": "sort_by",
+            "type": "string",
+            "in": "query"
+          },
+          {
+            "description": "asc or desc (default is asc)",
+            "name": "order",
+            "type": "string",
+            "in": "query"
+          }
+        ],
+        "tags": [
+          "epl"
+        ]
+      },
+      "post": {
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "Add a new team",
+        "operationId": "create_team",
+        "parameters": [
+          {
+            "name": "payload",
+            "required": true,
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Team"
+            }
+          }
+        ],
+        "tags": [
+          "epl"
+        ]
+      }
+    },
+    "/users/delete_user/{user_id}": {
+      "parameters": [
+        {
+          "name": "user_id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "delete": {
+        "responses": {
+          "404": {
+            "description": "User not found"
+          },
+          "200": {
+            "description": "User deleted successfully"
+          }
+        },
+        "summary": "Delete a user by ID",
+        "operationId": "delete_user",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/search_users": {
+      "get": {
+        "responses": {
+          "404": {
+            "description": "No users found"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "200": {
+            "description": "Users found"
+          }
+        },
+        "summary": "Search users by name or email",
+        "operationId": "search_users",
+        "parameters": [
+          {
+            "name": "payload",
+            "required": true,
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Search_User"
+            }
+          }
+        ],
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/{user_id}": {
+      "parameters": [
+        {
+          "in": "path",
+          "description": "The user identifier",
+          "name": "user_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "get": {
+        "responses": {
+          "404": {
+            "description": "User not found"
+          },
+          "200": {
+            "description": "Success"
+          }
+        },
+        "summary": "Fetch a user by ID",
+        "operationId": "get_user",
+        "tags": [
+          "users"
+        ]
+      },
+      "put": {
+        "responses": {
+          "400": {
+            "description": "Bad request"
+          },
+          "200": {
+            "description": "User updated successfully"
+          }
+        },
+        "summary": "Update a user by ID",
+        "operationId": "update_user",
+        "parameters": [
+          {
+            "name": "payload",
+            "required": true,
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/UpdateUser"
+            }
+          }
+        ],
+        "tags": [
+          "users"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "User Management API",
+    "version": "1.0",
+    "description": "A simple User Management API"
+  },
+  "produces": [
+    "application/json"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "tags": [
+    {
+      "name": "users",
+      "description": "User operations"
+    },
+    {
+      "name": "Session",
+      "description": "Session management"
+    },
+    {
+      "name": "Users",
+      "description": "User management"
+    },
+    {
+      "name": "epl",
+      "description": "EPL team & player operations"
+    }
+  ],
+  "definitions": {
+    "UpdateUser": {
+      "properties": {
+        "UserName": {
+          "type": "string",
+          "description": "The user name"
+        },
+        "Email": {
+          "type": "string",
+          "description": "The user email"
+        },
+        "Phone": {
+          "type": "string",
+          "description": "The user phone"
+        },
+        "Address": {
+          "type": "string",
+          "description": "The user address"
+        },
+        "Status": {
+          "type": "string",
+          "description": "The user status"
+        }
+      },
+      "type": "object"
+    },
+    "Search_User": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name to search for"
+        },
+        "email": {
+          "type": "string",
+          "description": "The email to search for"
+        }
+      },
+      "type": "object"
+    },
+    "UserLogin": {
+      "required": [
+        "password",
+        "username"
+      ],
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "The username"
+        },
+        "password": {
+          "type": "string",
+          "description": "The user password"
+        }
+      },
+      "type": "object"
+    },
+    "User": {
+      "required": [
+        "Name",
+        "UserId"
+      ],
+      "properties": {
+        "UserId": {
+          "type": "string",
+          "description": "The user ID"
+        },
+        "Name": {
+          "type": "string",
+          "description": "The user name"
+        },
+        "Email": {
+          "type": "string",
+          "description": "The user email",
+          "default": "unknown@example.com"
+        },
+        "Status": {
+          "type": "string",
+          "description": "The user status",
+          "default": "active"
+        },
+        "Preferences": {
+          "type": "object",
+          "description": "The user preferences",
+          "default": {
+            "theme": "light",
+            "notifications": true
+          }
+        },
+        "CreatedAt": {
+          "type": "string",
+          "description": "The user creation timestamp",
+          "default": "2025-04-26T22:16:00.503739"
+        }
+      },
+      "type": "object"
+    },
+    "Team": {
+      "required": [
+        "EntityType",
+        "TeamID",
+        "TeamName"
+      ],
+      "properties": {
+        "TeamID": {
+          "type": "string",
+          "description": "Team partition key"
+        },
+        "EntityType": {
+          "type": "string",
+          "description": "'Team' or 'Player'"
+        },
+        "TeamName": {
+          "type": "string",
+          "description": "Name of the team"
+        },
+        "Stadium": {
+          "type": "string",
+          "description": "Home stadium"
+        },
+        "Founded": {
+          "type": "string",
+          "description": "Foundation year"
+        },
+        "Manager": {
+          "type": "string",
+          "description": "Team manager"
+        }
+      },
+      "type": "object"
+    },
+    "Player": {
+      "required": [
+        "EntityType",
+        "PlayerName",
+        "TeamID"
+      ],
+      "properties": {
+        "TeamID": {
+          "type": "string",
+          "description": "Parent TeamID"
+        },
+        "EntityType": {
+          "type": "string",
+          "description": "'Player'"
+        },
+        "PlayerName": {
+          "type": "string",
+          "description": "Name of the player"
+        },
+        "Position": {
+          "type": "string",
+          "description": "Playing position"
+        },
+        "Number": {
+          "type": "integer",
+          "description": "Jersey number"
+        },
+        "Age": {
+          "type": "integer",
+          "description": "Player age"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "responses": {
+    "ParseError": {
+      "description": "When a mask can't be parsed"
+    },
+    "MaskError": {
+      "description": "When any error occurs on mask"
+    }
+  }
+}

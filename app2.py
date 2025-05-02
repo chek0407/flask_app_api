@@ -55,7 +55,7 @@ authorizations = {
 }
 # --- End security definitions ---
 
-api = Api(app, version='1.0', title='EPL Teams and Players API',
+api = Api(app, version='1.', title='EPL Teams and Players API',
           description='API for managing English Premier League teams and players, and user authentication.',
           # --- Add authorizations and apply security ---
           # Define the security schemes available
@@ -68,8 +68,7 @@ api = Api(app, version='1.0', title='EPL Teams and Players API',
               {'name': 'Users', 'description': 'Endpoints for managing user accounts'},
               {'name': 'EPL', 'description': 'Endpoints for English Premier League teams and players'}
           ]
-          # --- End security configuration & tags ---
-         )
+)
 
 # Define a new model for the login request
 login_model = api.model('UserLogin', {

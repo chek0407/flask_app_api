@@ -61,7 +61,7 @@ api = Api(app, version='1.1', title='EPL Teams and Players API',
           # Define the security schemes available
           authorizations=authorizations,
           # Apply the 'Bearer Auth' scheme globally to all endpoints by default
-          security='Bearer Auth'
+          security='Bearer Auth',
         # --- Add tags for UI separation ---
           tags=[
               {'name': 'Session', 'description': 'User authentication related endpoints'},

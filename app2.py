@@ -55,14 +55,20 @@ authorizations = {
 }
 # --- End security definitions ---
 
-api = Api(app, version='1.0', title='User Management API',
-          description='A simple User Management API',
+api = Api(app, version='1.0', title='EPL Teams and Players API',
+          description='API for managing English Premier League teams and players, and user authentication.',
           # --- Add authorizations and apply security ---
           # Define the security schemes available
           authorizations=authorizations,
           # Apply the 'Bearer Auth' scheme globally to all endpoints by default
           security='Bearer Auth'
-          # --- End security configuration ---
+        # --- Add tags for UI separation ---
+          tags=[
+              {'name': 'Session', 'description': 'User authentication related endpoints'},
+              {'name': 'Users', 'description': 'Endpoints for managing user accounts'},
+              {'name': 'EPL', 'description': 'Endpoints for English Premier League teams and players'}
+          ]
+          # --- End security configuration & tags ---
          )
 
 # Define a new model for the login request

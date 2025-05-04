@@ -611,35 +611,58 @@ class PlayerResource(Resource):
 class EPLSearch(Resource):
     @epl_ns.doc('search_epl')
     @epl_ns.param('key', 'Attribute name to search')
-    @epl_ns.param('value', 'Value to match (contains)')
+    @epl_ns.param('value', 'Value to match') # Updated description
     @jwt_required()
     def get(self):
         """Search teams or players by any attribute"""
         key   = request.args.get('key')
         value = request.args.get('value')
+
         if not key or not value:
             return {'error': 'key and value query params required'}, 400
-        try:
-            
-            filter_expression = f"contains(#{key}, :v)"
-            expression_attribute_names = {f"#{key}": key}
-            expression_attribute_values = {':v': value}
 
+        # Define placeholder names and values
+        expression_attribute_names = {f"#{key}": key}
+        expression_attribute_values = {':v': value}
+        filter_expression = ""
+
+        # --- Conditional FilterExpression based on attribute key type ---
+        # Assuming 'Number' and 'Age' are numeric attributes
+        if key in ['Number', 'Age']:
+            # For numeric attributes, use equality check
+            try:
+                # Attempt to convert the value to the appropriate type (integer)
+                # This assumes Age and Number are stored as integers
+                num_value = int(value)
+                expression_attribute_values = {':v': num_value}
+                filter_expression = f"#{key} = :v" # Use equality
+            except ValueError:
+                 return {'error': f'Value for numeric search key "{key}" must be an integer'}, 400
+        else:
+            # For other (presumably string) attributes, use 'contains'
+             filter_expression = f"contains(#{key}, :v)"
+        # --- End of Conditional FilterExpression ---
+
+        try:
             resp = epl_table.scan(
                 FilterExpression=filter_expression,
                 ExpressionAttributeNames=expression_attribute_names,
                 ExpressionAttributeValues=expression_attribute_values
             )
+
             items = resp.get('Items', [])
-            # --- FIX: Use fix_decimals helper here ---
             return {'results': fix_decimals(items)}, 200
 
         except ClientError as e:
-            # Improved error handling to show the DynamoDB message
+            logging.error(f"DynamoDB ClientError during search: {e}", exc_info=True)
             error_message = e.response.get('Error', {}).get('Message', 'An unknown DynamoDB error occurred.')
+            # Return 400 if it's an InvalidArgumentException or validation error from DynamoDB
+            if e.response['Error']['Code'] in ['ValidationException', 'InvalidArgumentException']:
+                 return {'error': error_message}, 400
             return {'error': error_message}, e.response['ResponseMetadata']['HTTPStatusCode']
         except Exception as e:
-            return {'error': f'An unexpected server error occurred: {str(e)}'}, 500
+             logging.error(f"Unexpected server error during search: {e}", exc_info=True)
+             return {'error': f'An unexpected server error occurred: {str(e)}'}, 500
 
 
 

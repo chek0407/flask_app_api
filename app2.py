@@ -314,7 +314,7 @@ def search_users():
     except Exception as e:
         return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 500
 
-# ——— EPL Namespace & Models —————————————————————————————————————————————
+# ———                   EPL Namespace & Models —————————————————————————————————————————————
 epl_ns = Namespace('epl', description='EPL team & player operations')
 
 team_model = epl_ns.model('Team', {
@@ -620,16 +620,26 @@ class EPLSearch(Resource):
         if not key or not value:
             return {'error': 'key and value query params required'}, 400
         try:
+            
+            filter_expression = f"contains(#{key}, :v)"
+            expression_attribute_names = {f"#{key}": key}
+            expression_attribute_values = {':v': value}
+
             resp = epl_table.scan(
-                FilterExpression=f"contains({key}, :v)",
-                ExpressionAttributeValues={':v': value}
+                FilterExpression=filter_expression,
+                ExpressionAttributeNames=expression_attribute_names,
+                ExpressionAttributeValues=expression_attribute_values
             )
             items = resp.get('Items', [])
             # --- FIX: Use fix_decimals helper here ---
             return {'results': fix_decimals(items)}, 200
-            # --- End FIX ---
+
         except ClientError as e:
-            return {'error': e.response['Error']['Message']}, 500
+            # Improved error handling to show the DynamoDB message
+            error_message = e.response.get('Error', {}).get('Message', 'An unknown DynamoDB error occurred.')
+            return {'error': error_message}, e.response['ResponseMetadata']['HTTPStatusCode']
+        except Exception as e:
+            return {'error': f'An unexpected server error occurred: {str(e)}'}, 500
 
 
 

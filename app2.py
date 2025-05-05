@@ -41,6 +41,7 @@ app.json_encoder = JSONEncoder
 # --- CORS Configuration (Place after app initialization) ---
 CORS(app, supports_credentials=True, origins=[
     "http://aws-chek-free-tier-bucket.s3-website.eu-north-1.amazonaws.com" # <-- This MUST match the Origin header from browser dev tools
+    "http://aws-chek-free-tier-bucket.s3.eu-north-1.amazonaws.com"
   ])
 
 # Initialize Flask-RESTx API

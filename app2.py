@@ -431,6 +431,8 @@ class TeamWithPlayers(Resource):
             return {'error': e.response['Error']['Message']}, 500
 
 # Add Team 
+@epl_ns.route('/teams')
+class AddTeam(Resource):
     @epl_ns.expect(team_model)
     @epl_ns.doc('create_team')
     @jwt_required()
@@ -442,6 +444,7 @@ class TeamWithPlayers(Resource):
             return {'message': 'Team created', 'team': team}, 201
         except ClientError as e:
             return {'error': e.response['Error']['Message']}, 500
+
 
 
 @epl_ns.route('/teams/<string:team_id>')
@@ -583,7 +586,7 @@ class PlayerResource(Resource):
              logging.error(f"Unexpected error updating player {team_id}/{jersey_number}: {e}", exc_info=True)
              return {'error': f'An unexpected server error occurred: {str(e)}'}, 500
 
-    # Ddelete method code below ...
+    # Delete method code below ...
 
 
     @epl_ns.doc('delete_player')

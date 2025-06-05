@@ -489,26 +489,32 @@ class TeamPlayers(Resource):
         except ClientError as e:
             return {'error': e.response['Error']['Message']}, 500
 
+@epl_ns.route('/teams/<string:team_id>')
+class TeamResource(Resource):
     @epl_ns.doc('delete_team')
     @jwt_required()
     def delete(self, team_id):
-        """Delete a team and all its players"""
+
+    #Delete a team and all its players
         try:
             # delete players first
             players = epl_table.scan(
                 FilterExpression="EntityType = :p AND TeamID = :t",
                 ExpressionAttributeValues={':p': 'Player', ':t': team_id}
             ).get('Items', [])
+
             with epl_table.batch_writer() as batch:
                 for pl in players:
                     batch.delete_item(Key={'TeamID': pl['TeamID'], 'PlayerName': pl['PlayerName']})
 
-            # delete team
-            epl_table.delete_item(Key={'TeamID': team_id})
+            # delete team (empty PlayerName for the team item)
+            epl_table.delete_item(Key={'TeamID': team_id, 'PlayerName': ''})
+
             return {'message': f'Team {team_id} and its players deleted'}, 200
 
         except ClientError as e:
             return {'error': e.response['Error']['Message']}, 500
+
 
 
 @epl_ns.route('/players')

@@ -8,6 +8,8 @@ from decimal import Decimal
 from flask_cors import CORS
 import logging
 import json
+from boto3.dynamodb.conditions import Key
+
 
 class JSONEncoder(json.JSONEncoder):
     """Custom encoder for Flask-RESTx to handle Decimal objects."""
@@ -494,23 +496,41 @@ class TeamResource(Resource):
     @epl_ns.doc('delete_team')
     @jwt_required()
     def delete(self, team_id):
-
-    #Delete a team and all its players
+        """
+        Delete a team and all its players from DynamoDB.
+        """
         try:
-            # delete players first
-            players = epl_table.scan(
-                FilterExpression="EntityType = :p AND TeamID = :t",
-                ExpressionAttributeValues={':p': 'Player', ':t': team_id}
+            # 1. Delete all players for the team
+            player_items = epl_table.query(
+                KeyConditionExpression=Key('TeamID').eq(team_id) & Key('EntityType').begins_with('PLAYER#')
             ).get('Items', [])
 
             with epl_table.batch_writer() as batch:
-                for pl in players:
-                    batch.delete_item(Key={'TeamID': pl['TeamID'], 'PlayerName': pl['PlayerName']})
+                for item in player_items:
+                    batch.delete_item(Key={
+                        'TeamID': item['TeamID'],
+                        'EntityType': item['EntityType']
+                    })
 
-            # delete team (empty PlayerName for the team item)
-            epl_table.delete_item(Key={'TeamID': team_id, 'PlayerName': ''})
+            # 2. Delete the team entry
+            team_item = epl_table.get_item(
+                Key={
+                    'TeamID': team_id,
+                    'EntityType': 'TEAM'
+                }
+            ).get('Item')
 
-            return {'message': f'Team {team_id} and its players deleted'}, 200
+            if team_item:
+                epl_table.delete_item(
+                    Key={
+                        'TeamID': team_id,
+                        'EntityType': 'TEAM'
+                    }
+                )
+            else:
+                return {'message': f'Team {team_id} not found.'}, 404
+
+            return {'message': f'Team {team_id} and all players deleted'}, 200
 
         except ClientError as e:
             return {'error': e.response['Error']['Message']}, 500
